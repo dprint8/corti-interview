@@ -1,0 +1,38 @@
+# consumer-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+      - name: consumer
+        image: consumer-image:0.2.1 # Reference the local image
+        ports:
+        - containerPort: 5001
+        env:
+        - name: RABBITMQ_HOST
+          value: "rabbitmq"  # Service name of RabbitMQ
+        - name: RABBITMQ_USER
+          value: "guest"
+        - name: RABBITMQ_PASS
+          value: "guest"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consumer
+spec:
+  ports:
+  - port: 5001
+    targetPort: 5001
+  selector:
+    app: consumer
